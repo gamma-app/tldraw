@@ -1,5 +1,5 @@
 {
-  "name": "@gamma-app/tldraw",
+  "name": "@tldraw/tldraw",
   "version": "1.16.0",
   "description": "A tiny little drawing app (editor)",
   "author": "@steveruizok",
