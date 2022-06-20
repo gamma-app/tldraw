@@ -16,9 +16,13 @@ import {
   getShapeStyle,
   transformRectangle,
   transformSingleRectangle,
+  getTextLabelSize,
+  getTextSvgElement,
+  getFontSize,
+  getFontFace
 } from '~state/shapes/shared'
 import { styled } from '~styles'
-import { DashStyle, TDMeta, TDShape, TDShapeType, TriangleShape } from '~types'
+import { AlignStyle, DashStyle, TDMeta, TDShape, TDShapeType, TriangleShape } from '~types'
 import { DashedTriangle } from './components/DashedTriangle'
 import { DrawTriangle } from './components/DrawTriangle'
 import { TriangleBindingIndicator } from './components/TriangleBindingIndicator'
@@ -79,11 +83,7 @@ export class TriangleUtil extends TDShapeUtil<T, E> {
         (label: string) => onShapeChange?.({ id, label }),
         [onShapeChange]
       )
-      const offsetY = React.useMemo(() => {
-        const center = Vec.div(size, 2)
-        const centroid = getTriangleCentroid(size)
-        return (centroid[1] - center[1]) * 0.72
-      }, [size])
+      const offsetY = React.useMemo(() => this.getLabelOffsetY(shape), [size])
       return (
         <FullWrapper ref={ref} {...events}>
           <TextLabel
@@ -95,8 +95,13 @@ export class TriangleUtil extends TDShapeUtil<T, E> {
             isEditing={isEditing}
             onChange={handleLabelChange}
             onBlur={onShapeBlur}
+            shape={shape}
           />
-          <SVGContainer id={shape.id + '_svg'} opacity={isGhost ? GHOSTED_OPACITY : 1}>
+          <SVGContainer
+            id={shape.id + '_svg'}
+            opacity={isGhost ? GHOSTED_OPACITY : 1}
+            shapeStyle={style}
+          >
             {isBinding && <TriangleBindingIndicator size={size} />}
             <Component
               id={id}
@@ -233,6 +238,49 @@ export class TriangleUtil extends TDShapeUtil<T, E> {
   transform = transformRectangle
 
   transformSingle = transformSingleRectangle
+
+  getSvgElement = (shape: T): SVGElement | void => {
+    const elm = document.getElementById(shape.id + '_svg')?.cloneNode(true) as SVGElement
+    if (!elm) return // possibly in test mode
+    if ('label' in shape && (shape as any).label !== undefined) {
+      const s = shape as TDShape & { label: string }
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+      const bounds = this.getBounds(shape)
+      const font = getFontStyle(shape.style)
+      const scale: number = shape.style.scale !== undefined ? shape.style.scale : 1
+      const fontSize = getFontSize(shape.style.size, shape.style.font) * (shape.style.scale ?? 1)
+      const fontFamily = getFontFace(shape.style.font).slice(1, -1)
+      const size = getTextLabelSize(shape.label!, font)
+      const labelElm = getTextSvgElement(
+        s.label!,
+        fontSize,
+        fontFamily,
+        AlignStyle.Start,
+        size[0],
+        false
+      )
+      labelElm.setAttribute('fill', getShapeStyle(shape.style).stroke)
+      labelElm.setAttribute('transform-origin', 'top left')
+
+      // Put the label at the bend point with text aligned centered
+      labelElm.setAttribute(
+        'transform',
+        `translate(${(bounds.width - size[0] * scale) / 2}, ${
+          (bounds.height - size[1] * scale) / 2 + this.getLabelOffsetY(shape)
+        })`
+      )
+      g.appendChild(elm)
+      g.appendChild(labelElm)
+      return g
+    }
+    return elm
+  }
+
+  getLabelOffsetY = (shape: TriangleShape): number => {
+    const center = Vec.div(shape.size, 2)
+    const centroid = getTriangleCentroid(shape.size)
+    return (centroid[1] - center[1]) * 0.72
+  }
 }
 
 const FullWrapper = styled('div', { width: '100%', height: '100%' })
