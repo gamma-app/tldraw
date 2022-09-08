@@ -104,7 +104,7 @@ export interface TldrawProps extends TDCallbacks {
   disableAssets?: boolean
 }
 
-const isSystemDarkMode = window.matchMedia
+const isSystemDarkMode = typeof window !== "undefined" && window.matchMedia 
   ? window.matchMedia('(prefers-color-scheme: dark)').matches
   : false
 
