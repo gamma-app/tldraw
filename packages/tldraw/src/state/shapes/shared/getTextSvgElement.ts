@@ -108,7 +108,7 @@ function breakText(opts: {
   // Split the text into words
   const words = opts.text
     .split(wordSeparator)
-    .flatMap((word) => word.replace('\n', ' \n'))
+    .flatMap((word) => word.replaceAll('\n', ' \n'))
     .join(' ')
     .split(' ')
 

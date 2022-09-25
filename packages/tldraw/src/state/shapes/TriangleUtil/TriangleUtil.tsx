@@ -255,7 +255,7 @@ export class TriangleUtil extends TDShapeUtil<T, E> {
         s.label!,
         fontSize,
         fontFamily,
-        AlignStyle.Start,
+        AlignStyle.Middle,
         size[0],
         false
       )
