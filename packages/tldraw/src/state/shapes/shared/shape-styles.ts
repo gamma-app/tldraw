@@ -1,4 +1,5 @@
 import { Utils } from '@tldraw/core'
+import { LINE_HEIGHT } from '~constants'
 import { AlignStyle, ColorStyle, DashStyle, FontStyle, ShapeStyles, SizeStyle, Theme } from '~types'
 
 const canvasLight = '#fafafa'
@@ -125,7 +126,7 @@ export function getFontStyle(style: ShapeStyles): string {
   const fontFace = getFontFace(style.font)
   const { scale = 1 } = style
 
-  return `${fontSize * scale}px/1 ${fontFace}`
+  return `${fontSize * scale}px/${LINE_HEIGHT} ${fontFace}`
 }
 
 export function getStickyFontStyle(style: ShapeStyles): string {

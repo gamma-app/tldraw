@@ -1,4 +1,4 @@
-import { LETTER_SPACING } from '~constants'
+import { LETTER_SPACING, LINE_HEIGHT } from '~constants'
 import { FontStyle } from '~types'
 
 let melm: any
@@ -26,6 +26,7 @@ function getMeasurementDiv() {
     userSelect: 'none',
     alignmentBaseline: 'mathematical',
     dominantBaseline: 'mathematical',
+    lineHeight: LINE_HEIGHT,
   })
 
   pre.tabIndex = -1

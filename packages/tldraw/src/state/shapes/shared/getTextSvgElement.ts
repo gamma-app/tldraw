@@ -1,4 +1,4 @@
-import { LETTER_SPACING } from '~constants'
+import { LETTER_SPACING, LINE_HEIGHT } from '~constants'
 import { AlignStyle } from '~types'
 
 // https://drafts.csswg.org/css-text/#word-separator
@@ -18,7 +18,7 @@ export function getTextSvgElement(
   wrap = false
 ) {
   const fontWeight = 'normal'
-  const lineHeight = 1
+  const lineHeight = LINE_HEIGHT
   const letterSpacingPct = LETTER_SPACING
 
   // Collect lines
